@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app',
+    'users',
     'rest_framework'
 ]
 
@@ -77,12 +77,8 @@ WSGI_APPLICATION = 'devquery.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'devquery',
-        'USER': 'root',
-        'PASSWORD': 'Yung_beef_420',
-        'HOST': 'localhost',  # or the hostname where your MySQL server is running
-        'PORT': '3306',      # or the port on which your MySQL server is listening
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
