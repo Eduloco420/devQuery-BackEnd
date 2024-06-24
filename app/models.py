@@ -73,7 +73,7 @@ class Deptoempresa(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'deptoempresa'
+        db_table = 'deptoEmpresa'
 
 
 class Empresa(models.Model):
@@ -112,7 +112,7 @@ class Logestadoticket(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'logestadoticket'
+        db_table = 'logEstadoTicket'
 
 
 class Mensajes(models.Model):
@@ -180,7 +180,19 @@ class Rolpermiso(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'rolpermiso'
+        db_table = 'rolPermiso'
+
+
+class Tecticket(models.Model):
+    tecticketid = models.AutoField(db_column='tecTicketId', primary_key=True)  # Field name made lowercase.
+    ticketid = models.ForeignKey('Ticket', models.DO_NOTHING, db_column='ticketId')  # Field name made lowercase.
+    tecnicoid = models.ForeignKey('Tecnico', models.DO_NOTHING, db_column='tecnicoId')  # Field name made lowercase.
+    fechaasigtecnico = models.DateTimeField(db_column='fechaAsigTecnico')  # Field name made lowercase.
+    userasigtecnico = models.CharField(db_column='userAsigTecnico', max_length=255)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'tecTicket'
 
 
 class Tecnico(models.Model):
@@ -199,18 +211,6 @@ class Tecnico(models.Model):
     class Meta:
         managed = False
         db_table = 'tecnico'
-
-
-class Tecticket(models.Model):
-    tecticketid = models.AutoField(db_column='tecTicketId', primary_key=True)  # Field name made lowercase.
-    ticketid = models.ForeignKey('Ticket', models.DO_NOTHING, db_column='ticketId')  # Field name made lowercase.
-    tecnicoid = models.ForeignKey(Tecnico, models.DO_NOTHING, db_column='tecnicoId')  # Field name made lowercase.
-    fechaasigtecnico = models.DateTimeField(db_column='fechaAsigTecnico')  # Field name made lowercase.
-    userasigtecnico = models.CharField(db_column='userAsigTecnico', max_length=255)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'tecticket'
 
 
 class Ticket(models.Model):
@@ -237,7 +237,7 @@ class Ticketarea(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'ticketarea'
+        db_table = 'ticketArea'
 
 
 class Tipoticket(models.Model):
@@ -246,7 +246,7 @@ class Tipoticket(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'tipoticket'
+        db_table = 'tipoTicket'
 
 
 class User(models.Model):

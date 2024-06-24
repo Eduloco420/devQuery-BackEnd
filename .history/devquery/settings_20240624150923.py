@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'devquery.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'devQuery',
+        'NAME': 'devquery',
         'USER': 'admin',
         'PASSWORD': 'Yung_beef_420',
         'HOST': 'devquery.cl6sugsac1of.us-east-1.rds.amazonaws.com',  # or the hostname where your MySQL server is running
