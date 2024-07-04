@@ -28,8 +28,8 @@ class ComunaSerializer(serializers.ModelSerializer):
 class AreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Area
-        fields = ('areaid','areaname')
-        read_only_fields = ('areaid','areaname')
+        fields = ('areaId','areaname')
+        read_only_fields = ('areaId','areaname')
         
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
