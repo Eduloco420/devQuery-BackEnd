@@ -1,0 +1,93 @@
+from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import *
+from .models import *
+from rest_framework.authtoken.models import Token
+from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+# Create your views here.
+@api_view(['POST'])
+def register(request):
+    serializer = UserSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+        user = User.objects.get(email=serializer.data['email'])
+        user.set_password(serializer.data['password'])
+        user.save()
+
+        token = Token.objects.create(user=user)
+
+        return Response({'token': token.key, 'user':serializer.data}, status=status.HTTP_201_CREATED)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def login(request):
+
+    user = get_object_or_404(User, username=request.data['username'])
+
+    if not user.check_password(request.data['password']):
+        return Response({"error": "Contraseña Incorrecta"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    token, created = Token.objects.get_or_create(user=user)
+    serializer = UserSerializer(instance=user)
+
+    return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def profile(request):
+
+    serializer = UserSerializer(instance=request.user)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@receiver(post_save, sender=Ticket)
+def assign_tecnico(sender, instance, created, **kwargs):
+    if created:
+        last_assigned, created = LastAssignedTechnician.objects.get_or_create(pk=1)
+        tecnicos = list(Tecnico.objects.all())
+        if tecnicos:
+            tecnico = tecnicos[last_assigned.last_assigned_index % len(tecnicos)]
+            Tecticket.objects.create(
+                ticketid=instance,
+                tecnicoid=tecnico,
+                fechaasigtecnico=timezone.now(),
+                userasigtecnico='system'  # o el nombre del usuario que asigna
+            )
+            last_assigned.last_assigned_index = (last_assigned.last_assigned_index + 1) % len(tecnicos)
+            last_assigned.save()
+
+@receiver(post_save, sender=Ticket)
+def create_logestadoticket(sender, instance, created, **kwargs):
+    if created:
+        Logestadoticket.objects.create(
+            ticketid=instance,
+            estadoticket_id=1,  # Suponiendo que el estado con ID 1 es el de creación
+            estadoticketfec=timezone.now(),
+            estadoticketcomentario="Creación de Ticket",
+            estadoticketuser="system"  # O el usuario que crea el ticket
+        )
+
+@api_view(['GET'])
+def tecTicketAsig(request, ticket_id):
+    try:
+        tecticket = Tecticket.objects.filter(ticketid=ticket_id).order_by('-fechaasigtecnico').first()
+        if tecticket:
+            serializer = TecticketSerializer(tecticket)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "No se encontraron registros para este ticket."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
