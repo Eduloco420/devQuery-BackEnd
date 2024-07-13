@@ -61,21 +61,21 @@ def assign_tecnico(sender, instance, created, **kwargs):
                 ticketid=instance,
                 tecnicoid=tecnico,
                 fechaasigtecnico=timezone.now(),
-                userasigtecnico='system'
+                userasigtecnico='system'  # o el nombre del usuario que asigna
             )
             last_assigned.last_assigned_index = (last_assigned.last_assigned_index + 1) % len(tecnicos)
             last_assigned.save()
 
-def create_logestadoticket(sender, instance, created, user_instance ,**kwargs):
+def create_logestadoticket(sender, instance, created, user_id ,**kwargs):
     if created:
-        print(user_instance)
+        print(user_id)  
         Logestadoticket.objects.create(
             ticketid=instance,
             estadoticket_id=1,
             estadoticketfec=timezone.now(),
             estadoticketcomentario="Creación de Ticket",
-            estadoticketuser=user_instance
-        )   
+            estadoticketuser=user_id
+        )
 
 @api_view(['GET'])
 def tecTicketAsig(request, ticket_id):
@@ -88,15 +88,4 @@ def tecTicketAsig(request, ticket_id):
             return Response({"error": "No se encontraron registros para este ticket."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-@api_view(['GET'])
-def estadoTicketAct(request, ticket_id):
-    try:
-        ticketest = Logestadoticket.objects.filter(ticketid=ticket_id).order_by('-estadoticketfec').first()
-        if ticketest:
-            serializer = LogestadoticketSerializer(ticketest)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "No se encontraron registros para este ticket."}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

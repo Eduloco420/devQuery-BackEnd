@@ -9,10 +9,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from django.utils import timezone
 
-
-email_sender = "devqueryinformation@gmail.com"
-email_password = "frrl ajhu xyjo wwma"
-
 class Archivos(models.Model):
     archivoid = models.AutoField(db_column='archivoId', primary_key=True)
     ticketid = models.ForeignKey('Ticket', models.DO_NOTHING, db_column='ticketId')
@@ -142,7 +138,6 @@ class Ticket(models.Model):
             self.ticketficid = f"tk-{new_id}"
         
         super(Ticket, self).save(*args, **kwargs)
-
 
 
 class Ticketarea(models.Model):
