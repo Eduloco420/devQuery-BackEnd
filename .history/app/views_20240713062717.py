@@ -11,13 +11,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.conf import settings
-import smtplib
-import ssl
-from email.message import EmailMessage
-from django.conf import settings
-from datetime import datetime
-
 
 # Create your views here.
 @api_view(['POST'])
@@ -83,6 +76,8 @@ def create_logestadoticket(sender, instance, created, user_instance ,**kwargs):
             estadoticketcomentario="Creación de Ticket",
             estadoticketuser=user_instance
         )
+        
+
 
 @api_view(['GET'])
 def tecTicketAsig(request, ticket_id):
@@ -107,27 +102,3 @@ def estadoTicketAct(request, ticket_id):
             return Response({"error": "No se encontraron registros para este ticket."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-@receiver(post_save, sender=Logestadoticket)
-def send_logestadoticket_email(sender, instance, created, **kwargs):
-    if created:
-        fecha_formateada = instance.estadoticketfec.strftime("%d-%m-%Y %H:%M:%S")
-        subject = "Estado de Ticket Actualizado"
-        body = (f"El estado del ticket con ID {instance.ticketid.ticketficid} ha sido actualizado.\n"
-                f"Nuevo estado: {instance.estadoticket.estadonom}\n"
-                f"Fecha de actualización: {fecha_formateada}\n"
-                f"Comentario: {instance.estadoticketcomentario}\n")
-
-        email = EmailMessage()
-        email['From'] = settings.DEFAULT_FROM_EMAIL
-        email['To'] = instance.ticketid.ticketcliente.userid.email  # Ajustar esto según tu modelo de cliente
-        email['Subject'] = subject
-        email.set_content(body)
-
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT, context=context) as server:
-            server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
-            server.send_message(email)
-
-
-

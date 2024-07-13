@@ -12,8 +12,6 @@ from rest_framework.authentication import TokenAuthentication
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
-import smtplib
-import ssl
 from email.message import EmailMessage
 from django.conf import settings
 from datetime import datetime
@@ -118,11 +116,11 @@ def send_logestadoticket_email(sender, instance, created, **kwargs):
                 f"Fecha de actualización: {fecha_formateada}\n"
                 f"Comentario: {instance.estadoticketcomentario}\n")
 
-        email = EmailMessage()
-        email['From'] = settings.DEFAULT_FROM_EMAIL
-        email['To'] = instance.ticketid.ticketcliente.userid.email  # Ajustar esto según tu modelo de cliente
-        email['Subject'] = subject
-        email.set_content(body)
+        email_message = EmailMessage()
+        email_message['From'] = settings.DEFAULT_FROM_EMAIL
+        email_message['To'] = instance.ticketid.ticketcliente.userid.email  # Ajustar esto según tu modelo de cliente
+        email_message['Subject'] = subject
+        email_message.set_content(body)
 
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT, context=context) as server:
