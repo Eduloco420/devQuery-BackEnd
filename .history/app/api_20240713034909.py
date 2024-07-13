@@ -9,8 +9,6 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 from django.conf import settings
-from datetime import datetime
-
 
 class ArchivosViewSet(viewsets.ModelViewSet):
     queryset = Archivos.objects.all()
@@ -115,9 +113,6 @@ class TicketViewSet(viewsets.ModelViewSet):
                 ticket = serializer.save()
                 create_logestadoticket(sender=Ticket, instance=ticket, created=True, user_instance=user_instance)
                 cliente = ticket.ticketcliente
-                fecha = datetime.fromisoformat(ticket.ticketfeccreacion)
-                fecha_form = fecha.strftime("%d-%m-%Y %H:%M:%S")
-
 
                 # Preparar el correo electrónico
                 subject = f'Nuevo ticket registrado: {ticket.ticketname}'
@@ -128,14 +123,14 @@ class TicketViewSet(viewsets.ModelViewSet):
                 ID: {ticket.ticketficid}
                 Nombre: {ticket.ticketname}
                 Descripción: {ticket.ticketdesc}
-                Fecha de Creación: {fecha_form}
+                Fecha de Creación: {ticket.ticketfeccreacion}
                 
                 Detalles del Cliente:
                 Nombre: {cliente.clientenombre} {cliente.clienteappaterno} {cliente.clienteapmaterno}
                 Teléfono: {cliente.clientefono}
                 Empresa: {cliente.clienteempresa.empresanom}
                 """
-                recipient = cliente.userid.email
+                recipient = cliente.user.email
 
                 # Enviar el correo electrónico
                 email = EmailMessage()

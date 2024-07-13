@@ -89,14 +89,7 @@ def tecTicketAsig(request, ticket_id):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-@api_view(['GET'])
+'''@api_view(['GET'])
 def estadoTicketAct(request, ticket_id):
     try:
-        ticketest = Logestadoticket.objects.filter(ticketid=ticket_id).order_by('-estadoticketfec').first()
-        if ticketest:
-            serializer = LogestadoticketSerializer(ticketest)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "No se encontraron registros para este ticket."}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        ticketest = '''

@@ -24,6 +24,6 @@ urlpatterns = [
     re_path('register', views.register),
     re_path('login', views.login),
     re_path('profile', views.profile),
-    path('tecTicketAsig/<ticket_id>', views.tecTicketAsig),
+    path('tecTicketAsig/<ticket_id>', views.tecTicketAsig)
     path('estadoTicketAct/<ticket_id>', views.estadoTicketAct)
 ]

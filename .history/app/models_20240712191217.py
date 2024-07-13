@@ -9,10 +9,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from django.utils import timezone
 
-
-email_sender = "devqueryinformation@gmail.com"
-email_password = "frrl ajhu xyjo wwma"
-
 class Archivos(models.Model):
     archivoid = models.AutoField(db_column='archivoId', primary_key=True)
     ticketid = models.ForeignKey('Ticket', models.DO_NOTHING, db_column='ticketId')
@@ -63,11 +59,11 @@ class Estado(models.Model):
 
 class Logestadoticket(models.Model):
     estadoticketid = models.AutoField(db_column='estadoTicketId', primary_key=True)
-    ticketid = models.ForeignKey('Ticket', db_column='ticketId', on_delete=models.DO_NOTHING)
-    estadoticket = models.ForeignKey(Estado, db_column='estadoTicket', on_delete=models.DO_NOTHING)
+    ticketid = models.ForeignKey('Ticket',  db_column='ticketId')
+    estadoticket = models.ForeignKey(Estado, models.DO_NOTHING, db_column='estadoTicket')
     estadoticketfec = models.DateTimeField(db_column='estadoTicketFec')
     estadoticketcomentario = models.CharField(db_column='estadoTicketComentario', max_length=255, blank=True, null=True)
-    estadoticketuser = models.ForeignKey('User', db_column='estadoTicketUser', on_delete=models.DO_NOTHING)
+    estadoticketuser = models.ForeignKey('User', on_delete=models.DO_NOTHING, db_column='estadoTicketUser', max_length=255)
 
 class Mensajes(models.Model):
     mensajeid = models.AutoField(db_column='mensajeId', primary_key=True)
@@ -123,27 +119,13 @@ class Tecnico(models.Model):
 
 class Ticket(models.Model):
     ticketid = models.AutoField(db_column='ticketId', primary_key=True)
-    ticketficid = models.CharField(db_column='ticketFicId', unique=True, max_length=255, null=True, blank=True)
+    ticketficid = models.CharField(db_column='ticketFicId', unique=True, max_length=255)
     ticketfeccreacion = models.DateTimeField(db_column='ticketFecCreacion', default=timezone.now)
     ticketcliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='ticketCliente')
     tickettipo = models.ForeignKey('Tipoticket', models.DO_NOTHING, db_column='ticketTipo')
     ticketprioridad = models.ForeignKey(Prioridad, models.DO_NOTHING, db_column='ticketPrioridad')
     ticketname = models.CharField(db_column='ticketName', max_length=255)
     ticketdesc = models.CharField(db_column='ticketDesc', max_length=255, blank=True, null=True)
-
-    def save(self, *args, **kwargs):
-        if not self.ticketficid:
-            last_ticket = Ticket.objects.all().order_by('-ticketid').first()
-            if last_ticket:
-                last_id = int(last_ticket.ticketficid.split('-')[1])
-                new_id = last_id + 1
-            else:
-                new_id = 1001
-            self.ticketficid = f"tk-{new_id}"
-        
-        super(Ticket, self).save(*args, **kwargs)
-
-
 
 class Ticketarea(models.Model):
     ticketareaid = models.AutoField(db_column='ticketAreaId', primary_key=True)

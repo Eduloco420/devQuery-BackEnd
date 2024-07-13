@@ -5,12 +5,6 @@ from .serializers import *
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
-import smtplib
-import ssl
-from email.message import EmailMessage
-from django.conf import settings
-from datetime import datetime
-
 
 class ArchivosViewSet(viewsets.ModelViewSet):
     queryset = Archivos.objects.all()
@@ -104,53 +98,12 @@ class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
 
     def perform_create(self, serializer):
-        UserModel  = get_user_model()
-        user = self.request.user
+        print(self.request.user)
         user_id = None
-        print(UserModel)
-        if user.is_authenticated:
-            user_instance = UserModel.objects.filter(email=user.email).first()
-            print(user_instance)
-            if user_instance:
-                ticket = serializer.save()
-                create_logestadoticket(sender=Ticket, instance=ticket, created=True, user_instance=user_instance)
-                cliente = ticket.ticketcliente
-                fecha = datetime.fromisoformat(ticket.ticketfeccreacion)
-                fecha_form = fecha.strftime("%d-%m-%Y %H:%M:%S")
-
-
-                # Preparar el correo electrónico
-                subject = f'Nuevo ticket registrado: {ticket.ticketname}'
-                message = f"""
-                Se ha registrado un nuevo ticket.
-                
-                Detalles del Ticket:
-                ID: {ticket.ticketficid}
-                Nombre: {ticket.ticketname}
-                Descripción: {ticket.ticketdesc}
-                Fecha de Creación: {fecha_form}
-                
-                Detalles del Cliente:
-                Nombre: {cliente.clientenombre} {cliente.clienteappaterno} {cliente.clienteapmaterno}
-                Teléfono: {cliente.clientefono}
-                Empresa: {cliente.clienteempresa.empresanom}
-                """
-                recipient = cliente.userid.email
-
-                # Enviar el correo electrónico
-                email = EmailMessage()
-                email['From'] = settings.DEFAULT_FROM_EMAIL
-                email['To'] = recipient
-                email['Subject'] = subject
-                email.set_content(message)
-
-                context = ssl.create_default_context()
-                with smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT, context=context) as server:
-                    server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
-                    server.send_message(email)
-
-                print(f'Correo enviado a: {recipient}')
-
+        if self.request.user.is_authenticated:
+            user_id = self.request.user.userId
+        ticket = serializer.save()
+        create_logestadoticket(sender=Ticket, instance=ticket, created=True, user_id=user_id)
 
 class TicketareaViewSet(viewsets.ModelViewSet):
     queryset = Ticketarea.objects.all()
