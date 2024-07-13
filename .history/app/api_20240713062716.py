@@ -115,7 +115,8 @@ class TicketViewSet(viewsets.ModelViewSet):
                 ticket = serializer.save()
                 create_logestadoticket(sender=Ticket, instance=ticket, created=True, user_instance=user_instance)
                 cliente = ticket.ticketcliente
-                fecha_form = ticket.ticketfeccreacion.strftime("%d-%m-%Y %H:%M:%S")
+                fecha = datetime.fromisoformat(ticket.ticketfeccreacion)
+                fecha_form = fecha.strftime("%d-%m-%Y %H:%M:%S")
 
 
                 # Preparar el correo electrónico

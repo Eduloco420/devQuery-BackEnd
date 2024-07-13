@@ -11,13 +11,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.conf import settings
-import smtplib
-import ssl
-from email.message import EmailMessage
-from django.conf import settings
-from datetime import datetime
-
 
 # Create your views here.
 @api_view(['POST'])
@@ -114,20 +107,22 @@ def send_logestadoticket_email(sender, instance, created, **kwargs):
         fecha_formateada = instance.estadoticketfec.strftime("%d-%m-%Y %H:%M:%S")
         subject = "Estado de Ticket Actualizado"
         body = (f"El estado del ticket con ID {instance.ticketid.ticketficid} ha sido actualizado.\n"
-                f"Nuevo estado: {instance.estadoticket.estadonom}\n"
+                f"Nuevo estado: {instance.estadoticket.estadoticketname}\n"
                 f"Fecha de actualización: {fecha_formateada}\n"
-                f"Comentario: {instance.estadoticketcomentario}\n")
+                f"Comentario: {instance.estadoticketcomentario}\n"
+                f"Actualizado por: {instance.estadoticketuser.email}")
 
-        email = EmailMessage()
-        email['From'] = settings.DEFAULT_FROM_EMAIL
-        email['To'] = instance.ticketid.ticketcliente.userid.email  # Ajustar esto según tu modelo de cliente
-        email['Subject'] = subject
-        email.set_content(body)
+        email_message = EmailMessage()
+        email_message['From'] = 'your-email@example.com'
+        email_message['To'] = instance.ticketid.ticketcliente.userid.email  # Ajustar esto según tu modelo de cliente
+        email_message['Subject'] = subject
+        email_message.set_content(body)
 
         context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT, context=context) as server:
-            server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
-            server.send_message(email)
+        with smtplib.SMTP('smtp.example.com', 587) as smtp:
+            smtp.starttls(context=context)
+            smtp.login('your-email@example.com', 'your-email-password')
+            smtp.send_message(email_message)
 
 
 
