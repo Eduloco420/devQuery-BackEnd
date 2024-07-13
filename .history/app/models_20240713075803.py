@@ -53,7 +53,7 @@ class Empresa(models.Model):
     empresacomuna = models.ForeignKey(Comuna, models.DO_NOTHING, db_column='empresaComuna', blank=True, null=True)
     empresamail = models.CharField(db_column='empresaMail', max_length=255, blank=True, null=True)
     empresafono = models.IntegerField(db_column='empresaFono', blank=True, null=True)
-    empresafecinsercion = models.DateTimeField(db_column='empresaFecInsercion',default=timezone.now)
+    empresafecinsercion = models.DateTimeField(db_column='empresaFecInsercion',default=timezone.now ,blank=True, null=True)
     empresafecinicvig = models.DateTimeField(db_column='empresaFecInicVig')
     empresafectermvig = models.DateTimeField(db_column='empresaFecTermVig')
 
