@@ -129,4 +129,3 @@ def send_logestadoticket_email(sender, instance, created, **kwargs):
 
 
 
-

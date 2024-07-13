@@ -114,8 +114,7 @@ class TicketViewSet(viewsets.ModelViewSet):
             if user_instance:
                 ticket = serializer.save()
                 create_logestadoticket(sender=Ticket, instance=ticket, created=True, user_instance=user_instance)
-                username = user_instance.username
-                assign_tecnico(sender=Ticket, instance=ticket, created=True, username=username)
+                assign_tecnico(sender=Ticket, instance=ticket, created=True, user_instance=user_instance)
                 cliente = ticket.ticketcliente
                 fecha_form = ticket.ticketfeccreacion.strftime("%d-%m-%Y %H:%M:%S")
 

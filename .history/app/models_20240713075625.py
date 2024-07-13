@@ -53,7 +53,7 @@ class Empresa(models.Model):
     empresacomuna = models.ForeignKey(Comuna, models.DO_NOTHING, db_column='empresaComuna', blank=True, null=True)
     empresamail = models.CharField(db_column='empresaMail', max_length=255, blank=True, null=True)
     empresafono = models.IntegerField(db_column='empresaFono', blank=True, null=True)
-    empresafecinsercion = models.DateTimeField(db_column='empresaFecInsercion',default=timezone.now)
+    empresafecinsercion = models.DateTimeField(db_column='empresaFecInsercion', blank=True, null=True)
     empresafecinicvig = models.DateTimeField(db_column='empresaFecInicVig')
     empresafectermvig = models.DateTimeField(db_column='empresaFecTermVig')
 
@@ -65,7 +65,7 @@ class Logestadoticket(models.Model):
     estadoticketid = models.AutoField(db_column='estadoTicketId', primary_key=True)
     ticketid = models.ForeignKey('Ticket', db_column='ticketId', on_delete=models.DO_NOTHING)
     estadoticket = models.ForeignKey(Estado, db_column='estadoTicket', on_delete=models.DO_NOTHING)
-    estadoticketfec = models.DateTimeField(db_column='estadoTicketFec', default=timezone.now)
+    estadoticketfec = models.DateTimeField(db_column='estadoTicketFec', null=True, blank=True)
     estadoticketcomentario = models.CharField(db_column='estadoTicketComentario', max_length=255, blank=True, null=True)
     estadoticketuser = models.ForeignKey('User', db_column='estadoTicketUser', on_delete=models.DO_NOTHING)
 

@@ -57,7 +57,7 @@ def profile(request):
     serializer = UserSerializer(instance=request.user)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-def assign_tecnico(sender, instance, created, username,**kwargs):
+def assign_tecnico(sender, instance, created, **kwargs, user_instance):
     if created:
         last_assigned, created = LastAssignedTechnician.objects.get_or_create(pk=1)
         tecnicos = list(Tecnico.objects.all())
@@ -67,7 +67,7 @@ def assign_tecnico(sender, instance, created, username,**kwargs):
                 ticketid=instance,
                 tecnicoid=tecnico,
                 fechaasigtecnico=timezone.now(),
-                userasigtecnico= username
+                userasigtecnico='system'
             )
             last_assigned.last_assigned_index = (last_assigned.last_assigned_index + 1) % len(tecnicos)
             last_assigned.save()
@@ -126,7 +126,6 @@ def send_logestadoticket_email(sender, instance, created, **kwargs):
         with smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT, context=context) as server:
             server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
             server.send_message(email)
-
 
 
 
